@@ -30,9 +30,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-      # 4. Build project (includes common module)
-      - name: Build ecom and auth modules
-        run: mvn clean package -pl ecom,auth -am -DskipTests
+      # 4. Build ecom module (Maven will also build common)
+      - name: Build ecom module
+        run: mvn clean package -pl ecom -am -DskipTests
 
       # 5. Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -46,9 +46,3 @@ jobs:
         run: |
           docker build -f ecom/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/ecom-service:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/ecom-service:latest
-
-      # 7. Build and push auth Docker image
-      - name: Build and push auth image
-        run: |
-          docker build -f auth/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/auth-service:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:latest
