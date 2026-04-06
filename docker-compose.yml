@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   ecom-service:
-    image: youruser/ecom-service:latest
+    image: ntquang0000/ecom-service:latest
     container_name: ecom-service
     restart: always
     ports:

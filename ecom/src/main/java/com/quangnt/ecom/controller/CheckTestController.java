@@ -13,7 +13,7 @@ public class CheckTestController {
     @GetMapping("/check")
     public User check(){
         return User.builder()
-                .id("1")
+                .id("2")
                 .createdAt(OffsetDateTime.now())
                 .build();
     }
