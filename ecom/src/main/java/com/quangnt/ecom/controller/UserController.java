@@ -3,14 +3,27 @@ package com.quangnt.ecom.controller;
 import com.quangnt.common.builder.ResponseBuilder;
 import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
-import com.quangnt.ecom.dto.*;
+import com.quangnt.ecom.dto.LoginRequest;
+import com.quangnt.ecom.dto.LoginResponse;
+import com.quangnt.ecom.dto.Role;
+import com.quangnt.ecom.dto.UserCreateRequest;
+import com.quangnt.ecom.dto.UserResponse;
+import com.quangnt.ecom.dto.UserUpdateRequest;
+import com.quangnt.ecom.dto.VerifyCodeRequest;
 import com.quangnt.ecom.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -66,5 +79,11 @@ public class UserController {
     public ResponseEntity<ResponseDto<LoginResponse>> login(@RequestBody @Validated LoginRequest request) {
         LoginResponse response = userService.login(request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
+    }
+
+    @PostMapping("/verify-code")
+    public ResponseEntity<ResponseDto<Void>> verifyCode(@RequestBody @Validated VerifyCodeRequest request) {
+        userService.verifyCodeEmail(request.getCode(), request.getUserId());
+        return ResponseBuilder.success(null, ResponseCode.SUCCESS);
     }
 }

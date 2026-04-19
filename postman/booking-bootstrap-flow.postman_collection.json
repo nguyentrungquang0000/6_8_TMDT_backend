@@ -1,0 +1,422 @@
+{
+  "info": {
+    "_postman_id": "1d5058eb-1ac4-494f-bca9-2f90ce7e731f",
+    "name": "Ecom - Booking Bootstrap Flow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Bootstraps required data on an empty DB and runs booking flow: user -> cinema -> room -> seat -> movie -> showtime -> promotion -> booking -> booking-detail -> payment."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api" },
+    { "key": "seed", "value": "" },
+    { "key": "userEmail", "value": "" },
+    { "key": "password", "value": "Pass@123" },
+    { "key": "fullName", "value": "Booking Test User" },
+    { "key": "phone", "value": "0900000000" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "cinemaId", "value": "" },
+    { "key": "roomId", "value": "" },
+    { "key": "seatId", "value": "" },
+    { "key": "movieId", "value": "" },
+    { "key": "showtimeId", "value": "" },
+    { "key": "promotionId", "value": "" },
+    { "key": "bookingId", "value": "" },
+    { "key": "bookingDetailId", "value": "" },
+    { "key": "paymentId", "value": "" },
+    { "key": "txId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Register User",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"phone\": \"{{phone}}\",\n  \"fullName\": \"{{fullName}}\",\n  \"password\": \"{{password}}\",\n  \"role\": \"USER\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/users/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "users", "register"]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.collectionVariables.get('seed')) {",
+              "  pm.collectionVariables.set('seed', Date.now().toString());",
+              "}",
+              "const seed = pm.collectionVariables.get('seed');",
+              "if (!pm.collectionVariables.get('userEmail')) {",
+              "  pm.collectionVariables.set('userEmail', 'booking_' + seed + '@mail.com');",
+              "}",
+              "pm.collectionVariables.set('txId', 'TX-' + seed);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Register status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('userId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Login",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/users/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "users", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Login status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('accessToken', res.data.accessToken);",
+              "pm.collectionVariables.set('refreshToken', res.data.refreshToken || '');"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Create Cinema",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"CGV Seed {{seed}}\",\n  \"address\": \"123 Test Street\",\n  \"city\": \"HCM\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/cinemas",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "cinemas"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('cinemaId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Create Room",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Room A\",\n  \"totalSeats\": 100,\n  \"cinemaId\": {{cinemaId}},\n  \"type\": \"STANDARD\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/rooms",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "rooms"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('roomId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Create Seat",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"seatNumber\": \"A1\",\n  \"rowLabel\": \"A\",\n  \"roomId\": {{roomId}},\n  \"type\": \"STANDARD\",\n  \"basePrice\": 90000\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/seats",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "seats"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('seatId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Create Movie",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Test Movie {{seed}}\",\n  \"genre\": \"Action\",\n  \"duration\": 120,\n  \"director\": \"Copilot Director\",\n  \"cast\": \"Actor 1, Actor 2\",\n  \"description\": \"Movie for booking flow test\",\n  \"posterMediaId\": null,\n  \"releaseDate\": \"2026-04-19\",\n  \"status\": \"NOW_SHOWING\",\n  \"teaserUrl\": \"https://example.com/teaser\",\n  \"reviewUrl\": \"https://example.com/review\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/movies",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "movies"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('movieId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Create Showtime",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"startTime\": \"2026-04-20T18:00:00\",\n  \"endTime\": \"2026-04-20T20:00:00\",\n  \"movieId\": {{movieId}},\n  \"roomId\": {{roomId}},\n  \"basePrice\": 90000,\n  \"availableSeats\": 100,\n  \"status\": \"SCHEDULED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/showtimes",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "showtimes"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('showtimeId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Create Promotion",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"PROMO{{seed}}\",\n  \"discountType\": \"PERCENT\",\n  \"discountValue\": 10,\n  \"startDate\": \"2026-04-19\",\n  \"endDate\": \"2026-12-31\",\n  \"maxUsage\": 1000,\n  \"usedCount\": 0,\n  \"status\": \"ACTIVE\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/promotions",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "promotions"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('promotionId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Create Booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"showtimeId\": {{showtimeId}},\n  \"promotionId\": {{promotionId}},\n  \"totalAmount\": 90000,\n  \"discountAmount\": 9000,\n  \"finalAmount\": 81000,\n  \"status\": \"PENDING\",\n  \"qrCode\": \"QR-{{seed}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "bookings"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('bookingId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Create Booking Detail",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bookingId\": {{bookingId}},\n  \"seatId\": {{seatId}},\n  \"priceAtTime\": 90000\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/booking-details",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "booking-details"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('bookingDetailId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Create Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"method\": \"MOMO\",\n  \"amount\": 81000,\n  \"transactionId\": \"{{txId}}\",\n  \"status\": \"SUCCESS\",\n  \"bookingId\": {{bookingId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "payments"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const res = pm.response.json();",
+              "pm.collectionVariables.set('paymentId', res.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Get Booking By Id",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/v1/bookings/{{bookingId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "bookings", "{{bookingId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Booking ID matches saved bookingId', function () {",
+              "  const res = pm.response.json();",
+              "  pm.expect(String(res.data.id)).to.eql(String(pm.collectionVariables.get('bookingId')));",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+

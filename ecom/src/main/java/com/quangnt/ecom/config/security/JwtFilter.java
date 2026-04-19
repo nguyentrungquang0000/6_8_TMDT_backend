@@ -8,8 +8,11 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -29,12 +32,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            jakarta.servlet.http.HttpServletResponse response,
-            FilterChain chain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain chain
     ) throws ServletException, IOException {
 
-        String header = request.getHeader("Authorization");
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (shouldNotFilter(request)) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
@@ -48,8 +56,10 @@ public class JwtFilter extends OncePerRequestFilter {
                     List.of(() -> "ROLE_" + scope)
             );
             SecurityContextHolder.getContext().setAuthentication(auth);
+            chain.doFilter(request, response);
+            return;
         }
-        chain.doFilter(request, response);
+        throw new ServletException("Missing or invalid Authorization header");
     }
 
     @Override
@@ -59,8 +69,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         return (
                 method.equals("POST") && (
-                        path.equals("/v1/users/register") ||
-                                path.equals("/v1/users/login")
+                        path.contains("/v1/users/register") ||
+                                path.contains("/v1/users/login")
                 )
         );
     }

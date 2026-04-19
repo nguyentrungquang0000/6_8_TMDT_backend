@@ -33,6 +33,7 @@ public class BookingDetailService {
         BookingDetail bookingDetail = BookingDetail.builder()
                 .booking(booking)
                 .seat(seat)
+                .seatNumber(seat.getSeatNumber())
                 .priceAtTime(request.getPriceAtTime())
                 .build();
         BookingDetail saved = bookingDetailRepository.save(bookingDetail);
@@ -48,6 +49,7 @@ public class BookingDetailService {
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         bookingDetail.setBooking(booking);
         bookingDetail.setSeat(seat);
+        bookingDetail.setSeatNumber(seat.getSeatNumber());
         bookingDetail.setPriceAtTime(request.getPriceAtTime());
         BookingDetail saved = bookingDetailRepository.save(bookingDetail);
         return mapToResponse(saved);

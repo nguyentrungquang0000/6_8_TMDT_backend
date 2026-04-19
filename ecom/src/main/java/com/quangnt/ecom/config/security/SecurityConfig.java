@@ -23,22 +23,20 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
 
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http
-            .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
-            .sessionManagement(s ->
-                s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+                .sessionManagement(s ->
+                        s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            )
-
-            .addFilterBefore(jwtFilter,
-                    UsernamePasswordAuthenticationFilter.class);
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v1/users/**").permitAll()
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }

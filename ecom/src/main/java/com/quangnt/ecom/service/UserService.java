@@ -3,7 +3,12 @@ package com.quangnt.ecom.service;
 import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.common.exception.BusinessException;
 import com.quangnt.ecom.config.security.JwtFilter;
-import com.quangnt.ecom.dto.*;
+import com.quangnt.ecom.dto.LoginRequest;
+import com.quangnt.ecom.dto.LoginResponse;
+import com.quangnt.ecom.dto.Role;
+import com.quangnt.ecom.dto.UserCreateRequest;
+import com.quangnt.ecom.dto.UserResponse;
+import com.quangnt.ecom.dto.UserUpdateRequest;
 import com.quangnt.ecom.entity.Media;
 import com.quangnt.ecom.entity.User;
 import com.quangnt.ecom.repository.MediaRepository;
@@ -11,13 +16,17 @@ import com.quangnt.ecom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +36,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final MediaService mediaService;
     private final JwtFilter jwtFilter;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final MailService mailService;
+
+
     public UserResponse create(UserCreateRequest request, Role role) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new BusinessException(ResponseCode.EMAIL_EXISTED);
@@ -39,6 +52,10 @@ public class UserService {
                 .role(role)
                 .build();
         User saved = userRepository.save(user);
+        String valueKey = UUID.randomUUID().toString();
+        this.redisTemplate.opsForValue().set(valueKey, saved.getId());
+        this.redisTemplate.expire(valueKey, Duration.ofMinutes(5));
+        mailService.sendSimpleMail(request.getEmail(),"Verify your email", "Your code is %s".formatted(valueKey));
         return mapToResponse(saved);
     }
 
@@ -59,6 +76,7 @@ public class UserService {
         user.setPhone(request.getPhone());
         user.setFullName(request.getFullName());
         user.setRole(request.getRole());
+        user.setAvatarId(avatar.getId());
         User saved = userRepository.save(user);
 
         media.setStatus(true);
@@ -127,4 +145,12 @@ public class UserService {
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         return mapToResponse(user);
     }
+
+    public void verifyCodeEmail(String keyCode, String userIdReq) {
+        String userId = (String) redisTemplate.opsForValue().getAndDelete(keyCode);
+        if (!StringUtils.hasText(userId) || !userId.contentEquals(userIdReq)) {
+            throw new BusinessException(ResponseCode.INVALID_PARAMETER);
+        }
+    }
+
 }
