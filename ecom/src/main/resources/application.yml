@@ -1,8 +1,6 @@
 spring:
   application:
     name: ecom
-  servlet:
-    context-path: /api
   jpa:
     show-sql: false
     hibernate:
@@ -14,9 +12,15 @@ spring:
       hibernate.order_inserts: true
       hibernate.order_updates: true
   datasource:
-    url: jdbc:postgresql://ep-spring-bar-ampyru5m-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require&channelBinding=require
-    username: neondb_owner
-    password: npg_yMeunx4jp9bi
+    url: jdbc:postgresql://localhost:5432/tmdt_db
+    username: postgres
+    password: 123
+#  data:
+#    redis:
+#      host: ${REDIS_HOST:localhost}
+#      port: ${REDIS_PORT:6379}
+#      password: ${REDIS_PASSWORD:}
+#      timeout: 5s
   mail:
     host: smtp.gmail.com
     port: 587
@@ -43,6 +47,7 @@ server:
   port: 8080
   servlet:
     context-path: /api
+  address: 0.0.0.0
 
 jwt:
   secret: bM7nzPj1nksc6mAn9DcO/0gsPpZ2xZVYxvHlTWR8HpqWZ8TgX6O2G5n2U3V7ZQoc1pX0Xg4s6I0vG4b3JSm+QA==

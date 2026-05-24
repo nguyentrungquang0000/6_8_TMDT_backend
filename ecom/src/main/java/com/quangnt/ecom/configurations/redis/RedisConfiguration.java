@@ -1,4 +1,4 @@
-package com.quangnt.ecom.config.redis;
+package com.quangnt.ecom.configurations.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,17 +10,20 @@ import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializ
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class RedisConfig {
+public class RedisConfiguration {
+
     @Bean
     public RedisConnectionFactory lettuceConnectionFactory() {
-        return new LettuceConnectionFactory(new RedisStandaloneConfiguration("localhost", 6379));
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration("localhost", 6379);
+        return new LettuceConnectionFactory(config);
     }
 
     @Bean
-    RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
+    RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(StringRedisSerializer.UTF_8);
+        template.setValueSerializer(GenericJacksonJsonRedisSerializer.builder().build());
         template.setHashKeySerializer(StringRedisSerializer.UTF_8);
         template.setHashValueSerializer(GenericJacksonJsonRedisSerializer.builder().build());
         return template;

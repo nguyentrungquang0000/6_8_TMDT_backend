@@ -2,7 +2,7 @@ package com.quangnt.ecom.service;
 
 import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.common.exception.BusinessException;
-import com.quangnt.ecom.config.security.JwtFilter;
+import com.quangnt.ecom.configurations.security.JwtFilter;
 import com.quangnt.ecom.dto.LoginRequest;
 import com.quangnt.ecom.dto.LoginResponse;
 import com.quangnt.ecom.dto.Role;

@@ -1,4 +1,4 @@
-package com.quangnt.ecom.config.security;
+package com.quangnt.ecom.configurations.security;
 
 import com.quangnt.ecom.entity.User;
 import io.jsonwebtoken.Claims;

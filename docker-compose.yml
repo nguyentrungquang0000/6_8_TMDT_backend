@@ -22,6 +22,19 @@ services:
       - redis_data:/data
     command: [ "redis-server", "--appendonly", "yes" ]
 
+  postgres:
+    image: postgres:17.3
+    restart: always
+    container_name: tmdt_postgres
+    environment:
+      POSTGRES_DB: tmdt_db
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 volumes:
   cron_minio_data:
   redis_data:
+  postgres_data:
