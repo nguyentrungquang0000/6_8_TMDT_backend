@@ -1,5 +1,6 @@
 package com.quangnt.ecom.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomCreateRequest {
+public class RoomRequest {
+    @NotNull
     private String name;
-    private Integer totalSeats;
+    @NotNull
     private Integer cinemaId;
+    @NotNull
     private RoomType type;
+    @NotNull
+    private Integer totalRow;
+    @NotNull
+    private Integer totalSeatOfRow;
 }

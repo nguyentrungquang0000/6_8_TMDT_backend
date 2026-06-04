@@ -15,11 +15,14 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SeatResponse {
     private Integer id;
-    private String seatNumber;
-    private String rowLabel;
+
+    private Integer seatNumber;
+    private Integer rowNumber;
+
     private Integer roomId;
     private SeatType type;
-    private BigDecimal basePrice;
+    private BigDecimal priceMultiplier;
+
     private Instant createdAt;
     private UUID createdBy;
     private Instant updatedAt;

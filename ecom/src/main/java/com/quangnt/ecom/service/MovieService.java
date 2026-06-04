@@ -1,105 +1,103 @@
 package com.quangnt.ecom.service;
 
+import com.quangnt.common.builder.ResponseBuilder;
+import com.quangnt.common.dto.MetaData;
+import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.common.exception.BusinessException;
-import com.quangnt.ecom.dto.MovieCreateRequest;
+import com.quangnt.ecom.dto.MovieRequest;
 import com.quangnt.ecom.dto.MovieResponse;
-import com.quangnt.ecom.dto.MovieUpdateRequest;
+import com.quangnt.ecom.dto.MovieSearchRequest;
+import com.quangnt.ecom.dto.MovieStatus;
 import com.quangnt.ecom.entity.Media;
 import com.quangnt.ecom.entity.Movie;
-import com.quangnt.ecom.repository.MediaRepository;
+import com.quangnt.ecom.mapper.MovieMapper;
 import com.quangnt.ecom.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class MovieService {
     private final MovieRepository movieRepository;
-    private final MediaRepository mediaRepository;
+    private final MovieMapper movieMapper;
+    private final MediaService mediaService;
 
-    public MovieResponse create(MovieCreateRequest request) {
-        Media poster = null;
-        if (request.getPosterMediaId() != null) {
-            poster = mediaRepository.findById(request.getPosterMediaId())
-                    .orElseThrow(() -> new BusinessException(ResponseCode.MEDIA_NOTFOUND));
-        }
-        Movie movie = Movie.builder()
-                .title(request.getTitle())
-                .genre(request.getGenre())
-                .duration(request.getDuration())
-                .director(request.getDirector())
-                .movieCast(request.getCast())
-                .description(request.getDescription())
-                .poster(poster)
-                .releaseDate(request.getReleaseDate())
-                .status(request.getStatus())
-                .teaserUrl(request.getTeaserUrl())
-                .reviewUrl(request.getReviewUrl())
-                .build();
+    @Transactional
+    public MovieResponse create(MovieRequest request) {
+        Media poster = mediaService.getMediaById(request.getPosterId());
+        Media teaser = mediaService.getMediaById(request.getTeaserId());
+        Movie movie = movieMapper.toEntity(request);
         Movie saved = movieRepository.save(movie);
-        return mapToResponse(saved);
+        poster.setStatus(true);
+        teaser.setStatus(true);
+        List<String> mediaIds = List.of(poster.getId(), teaser.getId());
+        Map<String, String> urlMap = mediaService.getPreviewUrls(mediaIds);
+        return movieMapper.toResponse(saved, urlMap);
     }
 
-    public MovieResponse update(Integer id, MovieUpdateRequest request) {
+    public MovieResponse update(Integer id, MovieRequest request) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        Media poster = null;
-        if (request.getPosterMediaId() != null) {
-            poster = mediaRepository.findById(request.getPosterMediaId())
-                    .orElseThrow(() -> new BusinessException(ResponseCode.MEDIA_NOTFOUND));
+        if (request.getPosterId() != null && !request.getPosterId().equals(movie.getPosterId())){
+            Media poster = mediaService.getMediaById(request.getPosterId());
+            poster.setStatus(true);
+            mediaService.deleteMediaById(movie.getPosterId());
         }
-        movie.setTitle(request.getTitle());
-        movie.setGenre(request.getGenre());
-        movie.setDuration(request.getDuration());
-        movie.setDirector(request.getDirector());
-        movie.setDescription(request.getDescription());
-        movie.setMovieCast(request.getCast());
-        movie.setPoster(poster);
-        movie.setReleaseDate(request.getReleaseDate());
-        movie.setStatus(request.getStatus());
-        movie.setTeaserUrl(request.getTeaserUrl());
-        movie.setReviewUrl(request.getReviewUrl());
+        if (request.getTeaserId() != null && !request.getTeaserId().equals(movie.getTeaserId())){
+            Media teaser = mediaService.getMediaById(request.getTeaserId());
+            teaser.setStatus(true);
+            mediaService.deleteMediaById(teaser.getId());
+        }
+        movieMapper.update(movie, request);
         Movie saved = movieRepository.save(movie);
-        return mapToResponse(saved);
+        List<String> mediaIds = List.of(movie.getPosterId(), movie.getTeaserId());
+        Map<String, String> urlMap = mediaService.getPreviewUrls(mediaIds);
+        return movieMapper.toResponse(saved, urlMap);
     }
 
-    public void delete(List<Integer> ids) {
-        movieRepository.deleteAllById(ids);
+    public void delete(Integer id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
+        movie = movieMapper.delete(movie);
+        movieRepository.save(movie);
+        mediaService.deletes(List.of(movie.getPosterId(), movie.getTeaserId()));
     }
 
     public MovieResponse getOne(Integer id) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        return mapToResponse(movie);
+        List<String> mediaIds = List.of(movie.getPosterId(), movie.getTeaserId());
+        Map<String, String> urlMap = mediaService.getPreviewUrls(mediaIds);
+        return movieMapper.toResponse(movie, urlMap);
     }
 
-    public Page<MovieResponse> search(Pageable pageable) {
-        return movieRepository.findAll(pageable).map(this::mapToResponse);
+    public ResponseEntity<ResponseDto<List<MovieResponse>>> search(MovieSearchRequest request) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(request.page(), request.size(), sort);
+        Page<Movie> movies = movieRepository.search(request.keyword(), request.status(), pageable);
+        List<String> mediaIds = new ArrayList<>();
+        for (Movie movie : movies.getContent()) {
+            mediaIds.add(movie.getPosterId());
+            mediaIds.add(movie.getTeaserId());
+        }
+        Map<String, String> urlMap = mediaService.getPreviewUrls(mediaIds);
+        List<MovieResponse> response = movieMapper.toResponses(movies.getContent(), urlMap);
+        return ResponseBuilder.success(response, ResponseCode.SUCCESS, MetaData.builder()
+                .currentPage(request.page())
+                .pageSize(request.size())
+                .totalPage(movies.getTotalPages())
+            .build());
     }
 
-    private MovieResponse mapToResponse(Movie movie) {
-        return MovieResponse.builder()
-                .id(movie.getId())
-                .title(movie.getTitle())
-                .genre(movie.getGenre())
-                .duration(movie.getDuration())
-                .director(movie.getDirector())
-                .cast(movie.getMovieCast())
-                .description(movie.getDescription())
-                .posterMediaId(movie.getPoster() != null ? movie.getPoster().getId() : null)
-                .releaseDate(movie.getReleaseDate())
-                .status(movie.getStatus())
-                .teaserUrl(movie.getTeaserUrl())
-                .reviewUrl(movie.getReviewUrl())
-                .createdAt(movie.getCreatedAt())
-                .createdBy(movie.getCreatedBy())
-                .updatedAt(movie.getUpdatedAt())
-                .updatedBy(movie.getUpdatedBy())
-                .build();
-    }
 }

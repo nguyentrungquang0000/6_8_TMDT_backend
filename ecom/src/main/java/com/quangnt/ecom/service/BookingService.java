@@ -40,13 +40,11 @@ public class BookingService {
         }
         Booking booking = Booking.builder()
                 .user(user)
-                .showtime(showtime)
                 .promotion(promotion)
                 .totalAmount(request.getTotalAmount())
                 .discountAmount(request.getDiscountAmount())
                 .finalAmount(request.getFinalAmount())
                 .status(request.getStatus())
-                .qrCode(request.getQrCode())
                 .build();
         Booking saved = bookingRepository.save(booking);
         return mapToResponse(saved);
@@ -65,13 +63,11 @@ public class BookingService {
                     .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         }
         booking.setUser(user);
-        booking.setShowtime(showtime);
         booking.setPromotion(promotion);
         booking.setTotalAmount(request.getTotalAmount());
         booking.setDiscountAmount(request.getDiscountAmount());
         booking.setFinalAmount(request.getFinalAmount());
         booking.setStatus(request.getStatus());
-        booking.setQrCode(request.getQrCode());
         Booking saved = bookingRepository.save(booking);
         return mapToResponse(saved);
     }
@@ -94,13 +90,11 @@ public class BookingService {
         return BookingResponse.builder()
                 .id(booking.getId())
                 .userId(booking.getUser().getId())
-                .showtimeId(booking.getShowtime().getId())
                 .promotionId(booking.getPromotion() != null ? booking.getPromotion().getId() : null)
                 .totalAmount(booking.getTotalAmount())
                 .discountAmount(booking.getDiscountAmount())
                 .finalAmount(booking.getFinalAmount())
                 .status(booking.getStatus())
-                .qrCode(booking.getQrCode())
                 .createdAt(booking.getCreatedAt())
                 .createdBy(booking.getCreatedBy())
                 .updatedAt(booking.getUpdatedAt())

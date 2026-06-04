@@ -19,9 +19,6 @@ import java.util.UUID;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 public abstract class BaseEntity {
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -36,4 +33,6 @@ public abstract class BaseEntity {
 
     @Column(name = "updated_by")
     protected UUID updatedBy;
+
+    private boolean isDeleted = false;
 }

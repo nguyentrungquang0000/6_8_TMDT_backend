@@ -37,4 +37,7 @@ public class User extends BaseEntity {
 
     @Builder.Default
     private boolean isLock = false;
+
+    @Column(name = "tenant_id", length = 100)
+    protected String tenantId;
 }

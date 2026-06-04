@@ -14,10 +14,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ShowtimeCreateRequest {
     private LocalDateTime startTime;
-    private LocalDateTime endTime;
     private Integer movieId;
     private Integer roomId;
     private BigDecimal basePrice;
-    private Integer availableSeats;
-    private ShowtimeStatus status;
+    private ShowtimeStatus status = ShowtimeStatus.COMING_SOON;
 }

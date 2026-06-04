@@ -10,10 +10,9 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "movies")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Movie extends BaseEntity {
 
     @Id
@@ -38,20 +37,12 @@ public class Movie extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "poster_media_id")
-    private Media poster;
-
+    private String posterId;
+    private String teaserId;
     @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private MovieStatus status;
-
-    @Column(name = "teaser_url", length = 500)
-    private String teaserUrl;
-
-    @Column(name = "review_url", length = 500)
-    private String reviewUrl;
+    private MovieStatus status = MovieStatus.COMING_SOON;
 }

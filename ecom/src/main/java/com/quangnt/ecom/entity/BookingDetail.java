@@ -24,12 +24,15 @@ public class BookingDetail extends BaseEntity {
     private Booking booking;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id", nullable = false)
-    private Seat seat;
-
-    @Column(name = "seat_number", nullable = false, length = 10)
-    private String seatNumber;
+    @JoinColumn(name = "showtime_seat_id", nullable = false)
+    private Ticket ticket;
 
     @Column(name = "price_at_time", nullable = false, precision = 10, scale = 2)
     private BigDecimal priceAtTime;
+
+    @Column(name = "qr_code", length = 500)
+    private String qrCode;
+
+    @Column(name = "tenant_id", length = 100)
+    protected String tenantId;
 }

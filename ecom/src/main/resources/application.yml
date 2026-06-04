@@ -3,6 +3,9 @@ spring:
     name: ecom
   servlet:
     context-path: /api
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   jpa:
     show-sql: false
     hibernate:
@@ -14,9 +17,9 @@ spring:
       hibernate.order_inserts: true
       hibernate.order_updates: true
   datasource:
-    url: jdbc:postgresql://ep-spring-bar-ampyru5m-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require&channelBinding=require
-    username: neondb_owner
-    password: npg_yMeunx4jp9bi
+    url: jdbc:postgresql://localhost:5432/cinema
+    username: postgres
+    password: postgres
   mail:
     host: smtp.gmail.com
     port: 587
@@ -40,7 +43,7 @@ store:
     public-domain: ${MINIO_PUBLIC_DOMAIN:}
 
 server:
-  port: 8080
+  port: 8889
   servlet:
     context-path: /api
 

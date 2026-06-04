@@ -19,13 +19,12 @@ public class MovieResponse {
     private String genre;
     private Integer duration;
     private String director;
-    private String cast;
+    private String movieCast;
     private String description;
-    private String posterMediaId;
+    private String posterUrl;
     private LocalDate releaseDate;
     private MovieStatus status;
     private String teaserUrl;
-    private String reviewUrl;
     private Instant createdAt;
     private UUID createdBy;
     private Instant updatedAt;

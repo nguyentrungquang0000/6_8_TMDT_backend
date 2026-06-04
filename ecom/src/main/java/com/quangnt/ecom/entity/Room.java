@@ -10,24 +10,21 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Room extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cinema_id", nullable = false)
-    private Cinema cinema;
+    private Integer cinemaId;
 
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(name = "total_seats", nullable = false)
-    private Integer totalSeats;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RoomType type;
+
+    private Integer totalRow;
+    private Integer totalSeatOfRow;
 
 }

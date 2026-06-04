@@ -3,9 +3,9 @@ package com.quangnt.ecom.controller;
 import com.quangnt.common.builder.ResponseBuilder;
 import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
-import com.quangnt.ecom.dto.MovieCreateRequest;
+import com.quangnt.ecom.dto.MovieRequest;
 import com.quangnt.ecom.dto.MovieResponse;
-import com.quangnt.ecom.dto.MovieUpdateRequest;
+import com.quangnt.ecom.dto.MovieSearchRequest;
 import com.quangnt.ecom.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,20 +22,20 @@ public class MovieController {
     private final MovieService movieService;
 
     @PostMapping
-    public ResponseEntity<ResponseDto<MovieResponse>> create(@RequestBody MovieCreateRequest request) {
+    public ResponseEntity<ResponseDto<MovieResponse>> create(@RequestBody MovieRequest request) {
         MovieResponse response = movieService.create(request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<MovieResponse>> update(@PathVariable Integer id, @RequestBody MovieUpdateRequest request) {
+    public ResponseEntity<ResponseDto<MovieResponse>> update(@PathVariable Integer id, @RequestBody MovieRequest request) {
         MovieResponse response = movieService.update(id, request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
-    @DeleteMapping
-    public ResponseEntity<ResponseDto<Object>> delete(@RequestBody List<Integer> ids) {
-        movieService.delete(ids);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto<Object>> delete(@PathVariable Integer id) {
+        movieService.delete(id);
         return ResponseBuilder.success(null, ResponseCode.SUCCESS);
     }
 
@@ -46,8 +46,7 @@ public class MovieController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<Page<MovieResponse>>> search(Pageable pageable) {
-        Page<MovieResponse> response = movieService.search(pageable);
-        return ResponseBuilder.success(response, ResponseCode.SUCCESS);
+    public ResponseEntity<ResponseDto<List<MovieResponse>>> search(@ModelAttribute MovieSearchRequest request) {
+        return movieService.search(request);
     }
 }

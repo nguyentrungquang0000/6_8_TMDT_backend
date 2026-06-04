@@ -32,7 +32,6 @@ public class BookingDetailService {
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         BookingDetail bookingDetail = BookingDetail.builder()
                 .booking(booking)
-                .seat(seat)
                 .priceAtTime(request.getPriceAtTime())
                 .build();
         BookingDetail saved = bookingDetailRepository.save(bookingDetail);
@@ -47,7 +46,6 @@ public class BookingDetailService {
         Seat seat = seatRepository.findById(request.getSeatId())
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         bookingDetail.setBooking(booking);
-        bookingDetail.setSeat(seat);
         bookingDetail.setPriceAtTime(request.getPriceAtTime());
         BookingDetail saved = bookingDetailRepository.save(bookingDetail);
         return mapToResponse(saved);
@@ -71,7 +69,6 @@ public class BookingDetailService {
         return BookingDetailResponse.builder()
                 .id(bookingDetail.getId())
                 .bookingId(bookingDetail.getBooking().getId())
-                .seatId(bookingDetail.getSeat().getId())
                 .priceAtTime(bookingDetail.getPriceAtTime())
                 .createdAt(bookingDetail.getCreatedAt())
                 .createdBy(bookingDetail.getCreatedBy())

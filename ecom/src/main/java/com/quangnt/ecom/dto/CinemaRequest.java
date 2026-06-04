@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CinemaCreateRequest {
+public class CinemaRequest {
     private String name;
     private String address;
     private String city;

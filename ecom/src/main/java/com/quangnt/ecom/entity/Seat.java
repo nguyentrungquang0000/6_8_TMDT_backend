@@ -13,26 +13,23 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Seat extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+    @Column(name = "room_id", nullable = false)
+    private Integer roomId;
 
-    @Column(name = "seat_number", nullable = false, length = 10)
-    private String seatNumber;
+    @Column(name = "seat_number", nullable = false)
+    private Integer seatNumber;
 
-    @Column(name = "row_label", nullable = false, length = 5)
-    private String rowLabel;
+    @Column(name = "row_number", nullable = false)
+    private Integer rowNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SeatType type = SeatType.STANDARD;
 
-    @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal basePrice;
-
+    @Column(name = "base_price", nullable = false)
+    private Double priceMultiplier;
 }

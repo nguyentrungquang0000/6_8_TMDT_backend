@@ -1,5 +1,6 @@
 package com.quangnt.ecom.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +13,15 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SeatCreateRequest {
+    private Integer id;
+    @NotNull
+    private String rowNumber;
+    @NotNull
     private String seatNumber;
-    private String rowLabel;
+    @NotNull
     private Integer roomId;
+    @NotNull
     private SeatType type;
-    private BigDecimal basePrice;
+    @NotNull
+    private Double priceMultiplier;
 }

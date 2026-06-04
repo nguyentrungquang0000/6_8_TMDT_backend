@@ -7,6 +7,7 @@ import com.quangnt.ecom.dto.SeatCreateRequest;
 import com.quangnt.ecom.dto.SeatResponse;
 import com.quangnt.ecom.dto.SeatUpdateRequest;
 import com.quangnt.ecom.service.SeatService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,33 +22,16 @@ import java.util.List;
 public class SeatController {
     private final SeatService seatService;
 
-    @PostMapping
-    public ResponseEntity<ResponseDto<SeatResponse>> create(@RequestBody SeatCreateRequest request) {
-        SeatResponse response = seatService.create(request);
+    @PutMapping
+    public ResponseEntity<ResponseDto<List<SeatResponse>>> createOrUpdate(@RequestBody @Valid List<SeatCreateRequest> request) {
+        List<SeatResponse> response = seatService.create(request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<SeatResponse>> update(@PathVariable Integer id, @RequestBody SeatUpdateRequest request) {
-        SeatResponse response = seatService.update(id, request);
-        return ResponseBuilder.success(response, ResponseCode.SUCCESS);
-    }
 
-    @DeleteMapping
-    public ResponseEntity<ResponseDto<Object>> delete(@RequestBody List<Integer> ids) {
-        seatService.delete(ids);
-        return ResponseBuilder.success(null, ResponseCode.SUCCESS);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<SeatResponse>> getOne(@PathVariable Integer id) {
-        SeatResponse response = seatService.getOne(id);
-        return ResponseBuilder.success(response, ResponseCode.SUCCESS);
-    }
-
-    @GetMapping
-    public ResponseEntity<ResponseDto<Page<SeatResponse>>> search(Pageable pageable) {
-        Page<SeatResponse> response = seatService.search(pageable);
+    @GetMapping("/{roomId}")
+    public ResponseEntity<ResponseDto<List<SeatResponse>>> search(@PathVariable Integer roomId) {
+        List<SeatResponse> response = seatService.search(roomId);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 }

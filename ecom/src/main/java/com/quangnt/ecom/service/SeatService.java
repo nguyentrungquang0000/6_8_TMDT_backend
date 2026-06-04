@@ -7,75 +7,55 @@ import com.quangnt.ecom.dto.SeatResponse;
 import com.quangnt.ecom.dto.SeatUpdateRequest;
 import com.quangnt.ecom.entity.Room;
 import com.quangnt.ecom.entity.Seat;
+import com.quangnt.ecom.mapper.SeatMapper;
 import com.quangnt.ecom.repository.RoomRepository;
 import com.quangnt.ecom.repository.SeatRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SeatService {
     private final SeatRepository seatRepository;
     private final RoomRepository roomRepository;
+    private final SeatMapper seatMapper;
 
-    public SeatResponse create(SeatCreateRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
+    public List<SeatResponse> create(List<SeatCreateRequest> request) {
+        if (request.isEmpty()) {
+            throw new BusinessException(ResponseCode.BAD_REQUEST);
+        }
+        Set<Integer> ids = request.stream().map(SeatCreateRequest::getRoomId).collect(Collectors.toSet());
+        if (ids.size() > 1) {
+            throw new BusinessException(ResponseCode.BAD_REQUEST);
+        }
+
+        Integer roomId = ids.iterator().next();
+        roomRepository.findById(roomId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        Seat seat = Seat.builder()
-                .seatNumber(request.getSeatNumber())
-                .rowLabel(request.getRowLabel())
-                .room(room)
-                .type(request.getType())
-                .basePrice(request.getBasePrice())
-                .build();
-        Seat saved = seatRepository.save(seat);
-        return mapToResponse(saved);
+
+        List<Seat> seatOlds = seatRepository.findAllByRoomId(roomId);
+        if (seatOlds.isEmpty()) {
+            throw new BusinessException(ResponseCode.BAD_REQUEST);
+        }
+
+        Map<Integer, Seat> seatOldMap = seatOlds.stream().collect(Collectors.toMap(Seat::getId, s -> s));
+        Map<Integer, SeatCreateRequest> requestMap = request.stream().collect(Collectors.toMap(SeatCreateRequest::getId, s -> s));
+        List<Seat> entities = seatMapper.update(seatOldMap, requestMap);
+        List<Seat> saved = seatRepository.saveAll(entities);
+        return seatMapper.toResponses(saved);
     }
 
-    public SeatResponse update(Integer id, SeatUpdateRequest request) {
-        Seat seat = seatRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        Room room = roomRepository.findById(request.getRoomId())
-                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        seat.setSeatNumber(request.getSeatNumber());
-        seat.setRowLabel(request.getRowLabel());
-        seat.setRoom(room);
-        seat.setType(request.getType());
-        seat.setBasePrice(request.getBasePrice());
-        Seat saved = seatRepository.save(seat);
-        return mapToResponse(saved);
-    }
 
-    public void delete(List<Integer> ids) {
-        seatRepository.deleteAllById(ids);
-    }
-
-    public SeatResponse getOne(Integer id) {
-        Seat seat = seatRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        return mapToResponse(seat);
-    }
-
-    public Page<SeatResponse> search(Pageable pageable) {
-        return seatRepository.findAll(pageable).map(this::mapToResponse);
-    }
-
-    private SeatResponse mapToResponse(Seat seat) {
-        return SeatResponse.builder()
-                .id(seat.getId())
-                .seatNumber(seat.getSeatNumber())
-                .rowLabel(seat.getRowLabel())
-                .roomId(seat.getRoom().getId())
-                .type(seat.getType())
-                .basePrice(seat.getBasePrice())
-                .createdAt(seat.getCreatedAt())
-                .createdBy(seat.getCreatedBy())
-                .updatedAt(seat.getUpdatedAt())
-                .updatedBy(seat.getUpdatedBy())
-                .build();
+    public List<SeatResponse> search(Integer roomId) {
+        List<Seat> seats = seatRepository.findAllByRoomId(roomId);
+        return seatMapper.toResponses(seats);
     }
 }

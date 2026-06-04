@@ -3,12 +3,11 @@ package com.quangnt.ecom.controller;
 import com.quangnt.common.builder.ResponseBuilder;
 import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
-import com.quangnt.ecom.dto.CinemaCreateRequest;
+import com.quangnt.ecom.dto.CinemaRequest;
 import com.quangnt.ecom.dto.CinemaResponse;
 import com.quangnt.ecom.dto.CinemaUpdateRequest;
 import com.quangnt.ecom.service.CinemaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,20 +21,20 @@ public class CinemaController {
     private final CinemaService cinemaService;
 
     @PostMapping
-    public ResponseEntity<ResponseDto<CinemaResponse>> create(@RequestBody CinemaCreateRequest request) {
+    public ResponseEntity<ResponseDto<CinemaResponse>> create(@RequestBody CinemaRequest request) {
         CinemaResponse response = cinemaService.create(request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<CinemaResponse>> update(@PathVariable Integer id, @RequestBody CinemaUpdateRequest request) {
+    public ResponseEntity<ResponseDto<CinemaResponse>> update(@PathVariable Integer id, @RequestBody CinemaRequest request) {
         CinemaResponse response = cinemaService.update(id, request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
-    @DeleteMapping
-    public ResponseEntity<ResponseDto<Object>> delete(@RequestBody List<Integer> ids) {
-        cinemaService.delete(ids);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto<Object>> delete(@PathVariable Integer id) {
+        cinemaService.delete(id);
         return ResponseBuilder.success(null, ResponseCode.SUCCESS);
     }
 
@@ -46,8 +45,8 @@ public class CinemaController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<Page<CinemaResponse>>> search(Pageable pageable) {
-        Page<CinemaResponse> response = cinemaService.search(pageable);
+    public ResponseEntity<ResponseDto<List<CinemaResponse>>> search() {
+        List<CinemaResponse> response = cinemaService.search();
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 }

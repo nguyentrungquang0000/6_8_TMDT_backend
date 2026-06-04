@@ -17,10 +17,10 @@ import java.util.UUID;
 public class ShowtimeResponse {
     private Integer id;
     private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private Integer movieId;
-    private Integer roomId;
+    private String movieName;
+    private String roomName;
     private BigDecimal basePrice;
+    private Integer totalSeats;
     private Integer availableSeats;
     private ShowtimeStatus status;
     private Instant createdAt;

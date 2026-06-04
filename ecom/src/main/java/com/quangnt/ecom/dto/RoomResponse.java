@@ -17,7 +17,10 @@ public class RoomResponse {
     private String name;
     private Integer totalSeats;
     private Integer cinemaId;
+    private String cinemaName;
     private RoomType type;
+    private Integer totalRow;
+    private Integer totalSeatOfRow;
     private Instant createdAt;
     private UUID createdBy;
     private Instant updatedAt;

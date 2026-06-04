@@ -11,16 +11,15 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieCreateRequest {
+public class MovieRequest {
     private String title;
     private String genre;
     private Integer duration;
     private String director;
-    private String cast;
+    private String movieCast;
     private String description;
-    private String posterMediaId;
+    private String posterId;
     private LocalDate releaseDate;
+    private String teaserId;
     private MovieStatus status;
-    private String teaserUrl;
-    private String reviewUrl;
 }

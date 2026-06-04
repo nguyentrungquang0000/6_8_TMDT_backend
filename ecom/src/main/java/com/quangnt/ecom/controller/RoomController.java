@@ -3,12 +3,13 @@ package com.quangnt.ecom.controller;
 import com.quangnt.common.builder.ResponseBuilder;
 import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
-import com.quangnt.ecom.dto.RoomCreateRequest;
+import com.quangnt.ecom.dto.RoomRequest;
 import com.quangnt.ecom.dto.RoomResponse;
+import com.quangnt.ecom.dto.RoomSearch;
 import com.quangnt.ecom.dto.RoomUpdateRequest;
 import com.quangnt.ecom.service.RoomService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,20 +23,20 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping
-    public ResponseEntity<ResponseDto<RoomResponse>> create(@RequestBody RoomCreateRequest request) {
+    public ResponseEntity<ResponseDto<RoomResponse>> create(@Valid @RequestBody RoomRequest request) {
         RoomResponse response = roomService.create(request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<RoomResponse>> update(@PathVariable Integer id, @RequestBody RoomUpdateRequest request) {
+    public ResponseEntity<ResponseDto<RoomResponse>> update(@Valid @PathVariable Integer id, @RequestBody RoomRequest request) {
         RoomResponse response = roomService.update(id, request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
-    @DeleteMapping
-    public ResponseEntity<ResponseDto<Object>> delete(@RequestBody List<Integer> ids) {
-        roomService.delete(ids);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto<Object>> delete(@PathVariable Integer id) {
+        roomService.delete(id);
         return ResponseBuilder.success(null, ResponseCode.SUCCESS);
     }
 
@@ -46,8 +47,7 @@ public class RoomController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<Page<RoomResponse>>> search(Pageable pageable) {
-        Page<RoomResponse> response = roomService.search(pageable);
-        return ResponseBuilder.success(response, ResponseCode.SUCCESS);
+    public ResponseEntity<ResponseDto<List<RoomResponse>>> search(@ModelAttribute RoomSearch request) {
+        return roomService.search(request);
     }
 }

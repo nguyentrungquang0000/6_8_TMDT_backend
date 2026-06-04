@@ -13,21 +13,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Showtime extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id", nullable = false)
-    private Movie movie;
+    @Column(name = "movie_id", nullable = false)
+    private Integer movieId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+    @Column(name = "room_id", nullable = false)
+    private Integer roomId;
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
@@ -38,11 +34,8 @@ public class Showtime extends BaseEntity {
     @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal basePrice;
 
-    @Column(name = "available_seats", nullable = false)
-    private Integer availableSeats;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private ShowtimeStatus status;
+    private ShowtimeStatus status = ShowtimeStatus.COMING_SOON;
 
 }

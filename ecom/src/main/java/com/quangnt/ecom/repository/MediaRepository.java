@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface MediaRepository extends JpaRepository<Media, String> {
-    List<Media> findByIdIn(List<UUID> mediaIds);
+    List<Media> findByIdIn(List<String> mediaIds);
 
     Set<Media> findByStatusFalseAndCreatedAtBefore(Instant offsetDateTime);
 }

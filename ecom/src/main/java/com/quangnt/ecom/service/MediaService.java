@@ -73,17 +73,23 @@ public class MediaService {
 
     public Media getMediaById(String mediaId) {
         return mediaRepository.findById(mediaId)
-                .orElseThrow(() -> new
-                                BusinessException(
-                                ResponseCode.ENTITY_NOT_FOUND,
-                                "Media",
-                                mediaId
-                        )
-                );
+            .orElseThrow(() -> new BusinessException(
+                    ResponseCode.ENTITY_NOT_FOUND,
+                    "Media",
+                    mediaId
+                )
+            );
     }
 
     public void deleteMediaById(String mediaId) {
+        if (mediaId == null) {
+            return;
+        }
         Media media = getMediaById(mediaId);
+        if (media == null){
+            log.error("Media not found with id: {}", mediaId);
+            return;
+        }
         storeClient.deleteByFileKey(media.getFileKey());
         mediaRepository.delete(media);
     }
@@ -103,7 +109,7 @@ public class MediaService {
         return storeClient.getPreviewUrl(media.getFileKey());
     }
 
-    public Map<String, String> getPreviewUrls(List<UUID> mediaIds) {
+    public Map<String, String> getPreviewUrls(List<String> mediaIds) {
         if (mediaIds == null || mediaIds.isEmpty()) {
             return Collections.emptyMap();
         }

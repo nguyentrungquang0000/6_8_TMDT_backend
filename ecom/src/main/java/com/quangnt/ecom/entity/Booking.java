@@ -25,10 +25,6 @@ public class Booking extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "showtime_id", nullable = false)
-    private Showtime showtime;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 
@@ -45,7 +41,6 @@ public class Booking extends BaseEntity {
     @Column(nullable = false, length = 20)
     private BookingStatus status;
 
-    @Column(name = "qr_code", length = 500)
-    private String qrCode;
-
+    @Column(name = "tenant_id", length = 100)
+    protected String tenantId;
 }
