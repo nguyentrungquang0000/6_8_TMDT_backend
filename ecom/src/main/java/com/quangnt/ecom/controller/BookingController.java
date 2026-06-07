@@ -5,7 +5,6 @@ import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.ecom.dto.BookingCreateRequest;
 import com.quangnt.ecom.dto.BookingResponse;
-import com.quangnt.ecom.dto.BookingUpdateRequest;
 import com.quangnt.ecom.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,12 +29,6 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<ResponseDto<BookingResponse>> create(@RequestBody BookingCreateRequest request) {
         BookingResponse response = bookingService.create(request);
-        return ResponseBuilder.success(response, ResponseCode.SUCCESS);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<BookingResponse>> update(@PathVariable Integer id, @RequestBody BookingUpdateRequest request) {
-        BookingResponse response = bookingService.update(id, request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 

@@ -29,7 +29,7 @@ public class Ticket {
     private Integer showtimeId;
 
     @Column(name = "seat_id", nullable = false)
-    private String seatId;
+    private Integer seatId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

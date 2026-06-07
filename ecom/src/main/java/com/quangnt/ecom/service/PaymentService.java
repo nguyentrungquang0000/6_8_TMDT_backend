@@ -8,7 +8,9 @@ import com.quangnt.ecom.dto.PaymentResponse;
 import com.quangnt.ecom.dto.PaymentStatus;
 import com.quangnt.ecom.dto.PaymentUpdateRequest;
 import com.quangnt.ecom.entity.Booking;
+import com.quangnt.ecom.entity.BookingDetail;
 import com.quangnt.ecom.entity.Payment;
+import com.quangnt.ecom.repository.BookingDetailRepository;
 import com.quangnt.ecom.repository.BookingRepository;
 import com.quangnt.ecom.repository.PaymentRepository;
 import com.quangnt.ecom.service.vnPay.VnPayService;
@@ -27,12 +29,16 @@ import java.util.List;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
+    private final BookingDetailRepository bookingDetailRepository;
     private final VnPayService vnPayService;
 
     public PaymentResponse create(PaymentCreateRequest request) {
         Booking booking = bookingRepository.findById(request.getBookingId())
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        BigDecimal amount = booking.getTotalAmount().subtract(booking.getDiscountAmount());
+        List<BookingDetail> bookingDetails = bookingDetailRepository.findAllByBookingId(booking.getId());
+        var amount = bookingDetails.stream()
+                .map(BookingDetail::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         Payment payment = Payment.builder()
                 .method(PaymentMethod.valueOf(request.getMethod()))
                 .transactionId(request.getTransactionId())

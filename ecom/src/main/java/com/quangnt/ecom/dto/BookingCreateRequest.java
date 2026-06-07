@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
@@ -14,10 +14,7 @@ import java.math.BigDecimal;
 public class BookingCreateRequest {
     private String userId;
     private Integer showtimeId;
-    private Integer promotionId;
-    private BigDecimal totalAmount;
-    private BigDecimal discountAmount;
-    private BigDecimal finalAmount;
     private BookingStatus status;
+    List<Integer> seatIds;
     private String qrCode;
 }

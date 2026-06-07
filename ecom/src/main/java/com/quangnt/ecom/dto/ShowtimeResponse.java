@@ -19,6 +19,7 @@ public class ShowtimeResponse {
     private LocalDateTime startTime;
     private String movieName;
     private String roomName;
+    private Integer roomId;
     private BigDecimal basePrice;
     private Integer totalSeats;
     private Integer availableSeats;

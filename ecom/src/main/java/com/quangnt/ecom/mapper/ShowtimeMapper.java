@@ -21,7 +21,8 @@ public interface ShowtimeMapper {
 
     @Mapping(target = "movieName", expression = "java(movieName)")
     @Mapping(target = "roomName", expression = "java(roomName)")
-    ShowtimeResponse toResponse(Showtime saved, String movieName, String roomName);
+    @Mapping(target = "roomId", expression = "java(roomId)")
+    ShowtimeResponse toResponse(Showtime saved, String movieName, String roomName, Integer roomId);
 
     @Mapping(target = "status", source = "request.status")
     @Mapping(target = "endTime", expression = "java(request.getStartTime().plusMinutes(20).plusMinutes(movie.getDuration()))")
@@ -31,7 +32,8 @@ public interface ShowtimeMapper {
         return content.stream().map(showtime -> {
             return toResponse(showtime,
                     movieMap.get(showtime.getMovieId()) != null ? movieMap.get(showtime.getMovieId()).getTitle() : null,
-                    roomMap.get(showtime.getRoomId()) != null ? roomMap.get(showtime.getRoomId()).getName() : null);
+                    roomMap.get(showtime.getRoomId()) != null ? roomMap.get(showtime.getRoomId()).getName() : null,
+                    showtime.getRoomId());
         }).toList();
     }
 }

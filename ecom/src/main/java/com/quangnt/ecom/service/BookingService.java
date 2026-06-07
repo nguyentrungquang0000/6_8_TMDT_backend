@@ -4,55 +4,56 @@ import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.common.exception.BusinessException;
 import com.quangnt.ecom.dto.BookingCreateRequest;
 import com.quangnt.ecom.dto.BookingResponse;
-import com.quangnt.ecom.dto.BookingUpdateRequest;
 import com.quangnt.ecom.entity.Booking;
-import com.quangnt.ecom.entity.Showtime;
+import com.quangnt.ecom.entity.BookingDetail;
 import com.quangnt.ecom.entity.User;
+import com.quangnt.ecom.repository.BookingDetailRepository;
 import com.quangnt.ecom.repository.BookingRepository;
-import com.quangnt.ecom.repository.ShowtimeRepository;
+import com.quangnt.ecom.repository.SeatRepository;
+import com.quangnt.ecom.repository.TicketRepository;
 import com.quangnt.ecom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
-    private final ShowtimeRepository showtimeRepository;
+    private final BookingDetailRepository bookingDetailRepository;
+    private final TicketRepository ticketRepository;
+    private final SeatRepository seatRepository;
 
     public BookingResponse create(BookingCreateRequest request) {
-        User user = userRepository.findById(request.getUserId())
+        String id = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
+        var seats = seatRepository.findAllById(request.getSeatIds());
+        if (CollectionUtils.isEmpty(seats)) {
+            throw new BusinessException(ResponseCode.NOT_FOUND);
+        }
+        var tickets = ticketRepository.findAllBySeatIdIn(request.getSeatIds());
         Booking booking = Booking.builder()
                 .user(user)
-                .totalAmount(request.getTotalAmount())
-                .discountAmount(request.getDiscountAmount())
-                .finalAmount(request.getFinalAmount())
                 .status(request.getStatus())
                 .build();
-        Booking saved = bookingRepository.save(booking);
-        return mapToResponse(saved);
-    }
-
-    public BookingResponse update(Integer id, BookingUpdateRequest request) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
-                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        booking.setUser(user);
-        booking.setTotalAmount(request.getTotalAmount());
-        booking.setDiscountAmount(request.getDiscountAmount());
-        booking.setFinalAmount(request.getFinalAmount());
-        booking.setStatus(request.getStatus());
-        Booking saved = bookingRepository.save(booking);
-        return mapToResponse(saved);
+        bookingRepository.save(booking);
+        List<BookingDetail> bookingDetails = tickets.stream()
+                .map(ticket -> BookingDetail.builder()
+                        .ticketId(ticket.getId())
+                        .price(ticket.getPrice())
+                        .bookingId(booking.getId())
+                        .build())
+                .toList();
+        bookingDetailRepository.saveAll(bookingDetails);
+        return mapToResponse(booking);
     }
 
     public void delete(List<Integer> ids) {
@@ -73,9 +74,6 @@ public class BookingService {
         return BookingResponse.builder()
                 .id(booking.getId())
                 .userId(booking.getUser().getId())
-                .totalAmount(booking.getTotalAmount())
-                .discountAmount(booking.getDiscountAmount())
-                .finalAmount(booking.getFinalAmount())
                 .status(booking.getStatus())
                 .createdAt(booking.getCreatedAt())
                 .createdBy(booking.getCreatedBy())

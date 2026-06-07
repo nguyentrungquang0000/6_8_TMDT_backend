@@ -61,7 +61,7 @@ public class ShowtimeService {
         }
         List<Ticket> ticketList = ticketMapper.toEntities(seats, saved.getId());
         ticketRepository.saveAll(ticketList);
-        return showtimeMapper.toResponse(saved, movie.getTitle(), room.getName());
+        return showtimeMapper.toResponse(saved, movie.getTitle(), room.getName(), room.getId());
     }
 
     public ShowtimeResponse update(Integer id, ShowtimeCreateRequest request) {
@@ -76,7 +76,7 @@ public class ShowtimeService {
         }
         showtime = showtimeMapper.update(showtime, request, movie);
         showtime = showtimeRepository.save(showtime);
-        return showtimeMapper.toResponse(showtime, movie.getTitle(), room.getName());
+        return showtimeMapper.toResponse(showtime, movie.getTitle(), room.getName(), room.getId());
     }
 
     public void delete(Integer id) {
@@ -90,7 +90,7 @@ public class ShowtimeService {
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         Movie movie = movieRepository.findById(showtime.getMovieId()).orElse(null);
         Room room = roomRepository.findById(showtime.getRoomId()).orElse(null);
-        return showtimeMapper.toResponse(showtime, movie != null ? movie.getTitle() : null, room != null ? room.getName() : null);
+        return showtimeMapper.toResponse(showtime, movie != null ? movie.getTitle() : null, room != null ? room.getName() : null, room != null ? room.getId() : null);
     }
 
     public ResponseDto<List<ShowtimeResponse>> search(ShowtimeSearch request) {
