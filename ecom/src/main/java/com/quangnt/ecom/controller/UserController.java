@@ -1,28 +1,16 @@
 package com.quangnt.ecom.controller;
 
 import com.quangnt.common.builder.ResponseBuilder;
+import com.quangnt.common.dto.MetaData;
 import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
-import com.quangnt.ecom.dto.LoginRequest;
-import com.quangnt.ecom.dto.LoginResponse;
-import com.quangnt.ecom.dto.Role;
-import com.quangnt.ecom.dto.UserCreateRequest;
-import com.quangnt.ecom.dto.UserResponse;
-import com.quangnt.ecom.dto.UserUpdateRequest;
+import com.quangnt.ecom.dto.*;
 import com.quangnt.ecom.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,6 +23,12 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ResponseDto<UserResponse>> create(@RequestBody UserCreateRequest request) {
         UserResponse response = userService.create(request, request.getRole());
+        return ResponseBuilder.success(response, ResponseCode.SUCCESS);
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<ResponseDto<UserResponse>> createAdmin(@RequestBody UserCreateRequest request) {
+        UserResponse response = userService.createAdmin(request, Role.ADMIN);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
@@ -69,9 +63,14 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<Page<UserResponse>>> search(Pageable pageable) {
-        Page<UserResponse> response = userService.search(pageable);
-        return ResponseBuilder.success(response, ResponseCode.SUCCESS);
+    public ResponseEntity<ResponseDto<List<UserResponse>>> search(@ModelAttribute UserSearch request) {
+        Page<UserResponse> response = userService.search(request);
+        MetaData metaData = MetaData.builder()
+                .pageSize(request.size())
+                .currentPage(request.page())
+                .totalPage(response.getTotalPages())
+                .build();
+        return ResponseBuilder.success(response.getContent(), ResponseCode.SUCCESS, metaData);
     }
 
     @PostMapping("/login")

@@ -10,6 +10,15 @@ import java.util.Set;
 public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
     List<Cinema> findByIdIn(Set<Integer> ids);
 
-    @Query("SELECT c FROM Cinema c WHERE c.isDeleted = false")
+    @Query("""
+    SELECT c
+    FROM Cinema c
+    WHERE c.isDeleted = false
+        and (
+            :#{@tenantProvider.getTenantId()} is null 
+            or c.id = :#{@tenantProvider.getTenantId()}
+        )
+    """)
     List<Cinema> findAllByDeletedIsFalse();
 }
+

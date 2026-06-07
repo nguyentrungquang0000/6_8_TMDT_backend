@@ -47,8 +47,8 @@ public class User extends BaseEntity {
     private String avatarId;
 
     @Builder.Default
-    private boolean isLock = false;
+    private Boolean isLock = false;
 
-    @Column(name = "tenant_id", length = 100)
-    protected String tenantId;
+    @Column(name = "cinema_id", length = 100)
+    protected Integer cinemaId;
 }

@@ -27,8 +27,6 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http
@@ -42,9 +40,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()
             )
-
-            .addFilterBefore(jwtFilter,
-                    UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

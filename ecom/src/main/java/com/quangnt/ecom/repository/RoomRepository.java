@@ -11,12 +11,16 @@ import java.util.List;
 
 public interface RoomRepository extends JpaRepository<Room, Integer> {
     @Query("""
-        SELECT r
-        FROM Room r
-        JOIN Cinema c ON r.cinemaId = c.id
-        WHERE r.isDeleted = false
-            AND c.isDeleted = false
-            AND (:cinemaId IS NULL OR r.cinemaId = :cinemaId)
+    SELECT r
+    FROM Room r
+    JOIN Cinema c ON r.cinemaId = c.id
+    WHERE r.isDeleted = false
+      AND c.isDeleted = false
+      AND (
+            (:cinemaId IS NOT NULL AND r.cinemaId = :cinemaId)
+            OR (:cinemaId IS NULL AND :#{@tenantProvider.getTenantId()} IS NOT NULL
+                AND r.cinemaId = :#{@tenantProvider.getTenantId()})
+          )
     """)
     Page<Room> search(@Param("cinemaId") Integer cinemaId,
                       Pageable pageable);

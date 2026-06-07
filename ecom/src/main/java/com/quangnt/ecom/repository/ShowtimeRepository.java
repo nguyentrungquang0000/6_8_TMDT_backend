@@ -29,7 +29,7 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Integer> {
         JOIN Movie m ON s.movieId = m.id
         JOIN Room r ON r.id = s.roomId
         WHERE (:movieName IS NULL OR :movieName = '' OR lower(m.title) LIKE lower(concat('%', :movieName, '%')))
-           AND (:cinemaId IS NULL OR r.cinemaId = :cinemaId)
+           AND ((:cinemaId IS NULL AND (:#{@tenantProvider.getTenantId()} IS NULL OR r.cinemaId = :#{@tenantProvider.getTenantId()})) OR r.cinemaId = :cinemaId)
            AND (:status IS NULL OR s.status = :status)
            AND (
                CAST(:date AS date) IS NULL

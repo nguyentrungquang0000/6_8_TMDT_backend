@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateRequest {
+    private Integer cinemaId;
     private String email;
     private String phone;
     private String fullName;

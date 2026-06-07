@@ -3,19 +3,16 @@ package com.quangnt.ecom.service;
 import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.common.exception.BusinessException;
 import com.quangnt.ecom.config.security.JwtFilter;
-import com.quangnt.ecom.dto.LoginRequest;
-import com.quangnt.ecom.dto.LoginResponse;
-import com.quangnt.ecom.dto.Role;
-import com.quangnt.ecom.dto.UserCreateRequest;
-import com.quangnt.ecom.dto.UserResponse;
-import com.quangnt.ecom.dto.UserUpdateRequest;
+import com.quangnt.ecom.dto.*;
 import com.quangnt.ecom.entity.Media;
 import com.quangnt.ecom.entity.User;
 import com.quangnt.ecom.repository.MediaRepository;
 import com.quangnt.ecom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,6 +39,22 @@ public class UserService {
                 .fullName(request.getFullName())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .role(role)
+                .build();
+        User saved = userRepository.save(user);
+        return mapToResponse(saved);
+    }
+
+    public UserResponse createAdmin(UserCreateRequest request, Role role) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new BusinessException(ResponseCode.EMAIL_EXISTED);
+        }
+        User user = User.builder()
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .fullName(request.getFullName())
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .role(role)
+                .cinemaId(Integer.valueOf(request.getCinemaId().toString()))
                 .build();
         User saved = userRepository.save(user);
         return mapToResponse(saved);
@@ -74,7 +87,7 @@ public class UserService {
     public void delete(List<String> ids) {
         List<User> userList = userRepository.findAllById(ids);
         for (User user : userList) {
-            user.setLock(true);
+            user.setIsLock(true);
             userRepository.save(user);
         }
     }
@@ -85,9 +98,7 @@ public class UserService {
         return mapToResponse(user);
     }
 
-    public Page<UserResponse> search(Pageable pageable) {
-        return userRepository.findAll(pageable).map(this::mapToResponse);
-    }
+
 
     private UserResponse mapToResponse(User user) {
         return UserResponse.builder()
@@ -101,14 +112,14 @@ public class UserService {
                 .createdBy(user.getCreatedBy())
                 .updatedAt(user.getUpdatedAt())
                 .updatedBy(user.getUpdatedBy())
-                .isLock(user.isLock())
+                .isLock(user.getIsLock())
                 .build();
     }
 
     public LoginResponse login(LoginRequest request) {
             User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new BusinessException(ResponseCode.LOGIN_FAILED));
-            if (user.isLock()) {
+            if (user.getIsLock()) {
                 throw new BusinessException(ResponseCode.ACCOUNT_LOCKED);
             }
             if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
@@ -131,5 +142,16 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         return mapToResponse(user);
+    }
+
+    public Page<UserResponse> search(UserSearch request) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "fullName");
+        Pageable pageable = PageRequest.of(
+                request.page() == null ? 0 : request.page(),
+                request.size() == null ? 10 : request.size(),
+                sort
+        );
+        Page<User> userPage = userRepository.search(request.keyword(), request.role(), request.isLock(), pageable);
+        return userPage.map(this::mapToResponse);
     }
 }

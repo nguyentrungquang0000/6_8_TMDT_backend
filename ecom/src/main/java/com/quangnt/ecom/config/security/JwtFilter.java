@@ -1,5 +1,6 @@
 package com.quangnt.ecom.config.security;
 
+import com.quangnt.common.tenant.TenantContextHolder;
 import com.quangnt.ecom.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -43,6 +44,14 @@ public class JwtFilter extends OncePerRequestFilter {
             var claims = parse(token);
             String userId = claims.get("userId", String.class);
             String scope = claims.get("scope", String.class);
+            Object cinemaIdObj = claims.get("cinemaId");
+            Integer cinemaId = cinemaIdObj != null
+                    ? Integer.valueOf(cinemaIdObj.toString())
+                    : null;
+
+            if ("ADMIN".equals(scope)) {
+                TenantContextHolder.setTenantId(cinemaId);
+            }
 
             var auth = new UsernamePasswordAuthenticationToken(
                     userId,
@@ -82,6 +91,7 @@ public class JwtFilter extends OncePerRequestFilter {
         return Jwts.builder()
                 .claim("scope", user.getRole().name())
                 .claim("userId", user.getId())
+                .claim("cinemaId", user.getCinemaId())
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + 1000 * 60 * 60))
                 .signWith(key, SignatureAlgorithm.HS512)
