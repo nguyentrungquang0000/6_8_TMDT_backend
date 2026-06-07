@@ -22,4 +22,5 @@ public class MovieRequest {
     private LocalDate releaseDate;
     private String teaserId;
     private MovieStatus status;
+    private Boolean isTrending;
 }

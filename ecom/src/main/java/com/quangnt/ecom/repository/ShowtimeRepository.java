@@ -27,14 +27,19 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Integer> {
     @Query("""
         SELECT s FROM Showtime s
         JOIN Movie m ON s.movieId = m.id
+        JOIN Room r ON r.id = s.roomId
         WHERE (:movieName IS NULL OR :movieName = '' OR lower(m.title) LIKE lower(concat('%', :movieName, '%')))
-             AND (:roomId IS NULL OR s.roomId = :roomId)
-             AND (:status IS NULL OR s.status = :status)
-             AND (:date IS NULL OR CAST(s.startTime AS localdate) = :date)
+           AND (:cinemaId IS NULL OR r.cinemaId = :cinemaId)
+           AND (:status IS NULL OR s.status = :status)
+           AND (
+               CAST(:date AS date) IS NULL
+               OR CAST(s.startTime AS date) = :date
+           )
+           AND s.isDeleted = false
     """)
     Page<Showtime> search(
             @Param("movieName") String movieName,
-            @Param("roomId") Integer roomId,
+            @Param("cinemaId") Integer cinemaId,
             @Param("status") ShowtimeStatus status,
             @Param("date") LocalDate date,
             Pageable pageable

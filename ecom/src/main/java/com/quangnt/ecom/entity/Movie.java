@@ -55,4 +55,7 @@ public class Movie extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MovieStatus status = MovieStatus.COMING_SOON;
+
+    private Boolean isTrending = false;
+    private Integer trendingOrder;
 }

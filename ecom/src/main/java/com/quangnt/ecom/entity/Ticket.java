@@ -35,7 +35,6 @@ public class Ticket {
     @Column(nullable = false)
     private SeatType type;
 
-    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
     @Column(name = "status", nullable = false)

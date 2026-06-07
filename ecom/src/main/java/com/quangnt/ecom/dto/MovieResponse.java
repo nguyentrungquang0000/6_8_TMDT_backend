@@ -25,6 +25,10 @@ public class MovieResponse {
     private LocalDate releaseDate;
     private MovieStatus status;
     private String teaserUrl;
+
+    private Boolean isTrending = false;
+    private Integer trendingOrder;
+
     private Instant createdAt;
     private UUID createdBy;
     private Instant updatedAt;
