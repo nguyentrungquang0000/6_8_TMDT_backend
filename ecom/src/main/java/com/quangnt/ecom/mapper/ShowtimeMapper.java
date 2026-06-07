@@ -15,7 +15,7 @@ import java.util.Map;
 @Mapper(componentModel = "spring")
 public interface ShowtimeMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", source = "request.status")
+    @Mapping(target = "status", constant = "COMING_SOON")
     @Mapping(target = "endTime", expression = "java(request.getStartTime().plusMinutes(20).plusMinutes(movie.getDuration()))")
     Showtime toEntity(ShowtimeCreateRequest request, Movie movie);
 

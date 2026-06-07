@@ -3,6 +3,7 @@ package com.quangnt.ecom.controller;
 import com.quangnt.common.builder.ResponseBuilder;
 import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
+import com.quangnt.ecom.dto.MovieListRequest;
 import com.quangnt.ecom.dto.MovieRequest;
 import com.quangnt.ecom.dto.MovieResponse;
 import com.quangnt.ecom.dto.MovieSearchRequest;
@@ -27,10 +28,28 @@ public class MovieController {
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
     }
 
+    @GetMapping("/trending")
+    public ResponseEntity<ResponseDto<List<MovieResponse>>> getTrending() {
+        List<MovieResponse> response = movieService.getTrending();
+        return ResponseBuilder.success(response, ResponseCode.SUCCESS);
+    }
+
+    @PutMapping("/reorder")
+    public ResponseEntity<ResponseDto<Void>> reorder(@RequestBody MovieListRequest request) {
+        movieService.reorder(request);
+        return ResponseBuilder.success(null, ResponseCode.SUCCESS);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<MovieResponse>> update(@PathVariable Integer id, @RequestBody MovieRequest request) {
         MovieResponse response = movieService.update(id, request);
         return ResponseBuilder.success(response, ResponseCode.SUCCESS);
+    }
+
+    @PutMapping("/remove-trending")
+    public ResponseEntity<ResponseDto<Void>> removeTrending(@RequestBody MovieListRequest request) {
+         movieService.removeTrending(request);
+        return ResponseBuilder.success(null, ResponseCode.SUCCESS);
     }
 
     @DeleteMapping("/{id}")
@@ -49,4 +68,5 @@ public class MovieController {
     public ResponseEntity<ResponseDto<List<MovieResponse>>> search(@ModelAttribute MovieSearchRequest request) {
         return movieService.search(request);
     }
+
 }

@@ -21,6 +21,7 @@ public interface MovieMapper {
     MovieResponse toResponse(Movie movie, Map<String, String> urlMap);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "isTrending", expression = "java(request.getIsTrending())")
     void update(@MappingTarget Movie movie, MovieRequest request);
 
     default String getUrl(String mediaId, Map<String, String> urlMap){
@@ -33,4 +34,11 @@ public interface MovieMapper {
 
     @Mapping(target = "deleted", expression = "java(true)")
     Movie delete(Movie movie);
+
+    default List<Movie> removeTrendings(List<Movie> movies){
+        return movies.stream().peek(movie -> {
+            movie.setIsTrending(false);
+            movie.setTrendingOrder(null);
+        }).collect(Collectors.toList());
+    }
 }

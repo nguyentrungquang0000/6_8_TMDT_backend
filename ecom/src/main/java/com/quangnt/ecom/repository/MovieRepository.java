@@ -22,4 +22,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
                        Pageable pageable);
 
     List<Movie> findAllByIdIn(List<Integer> movieIds);
+
+    @Query("SELECT m FROM Movie m WHERE m.isTrending = true AND m.isDeleted = false order by m.trendingOrder asc")
+    List<Movie> findAllByIsTrendingAndDeletedFalse();
 }
