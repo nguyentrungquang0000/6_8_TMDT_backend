@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class PaymentCreateRequest {
     private String method;
-    private BigDecimal amount;
     private String transactionId;
     private String status;
     private Integer bookingId;

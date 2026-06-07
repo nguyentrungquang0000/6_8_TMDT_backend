@@ -23,14 +23,8 @@ public class Ticket {
     @Column(name = "showtime_id", nullable = false)
     private Integer showtimeId;
 
-    @Column(name = "row_number", nullable = false)
-    private Integer rowNumber;
-
-    @Column(name = "seat_number", nullable = false)
-    private Integer seatNumber;
-
-    @Column(name = "seat", nullable = false)
-    private String seat;
+    @Column(name = "seat_id", nullable = false)
+    private String seatId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -38,4 +32,7 @@ public class Ticket {
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;
+
+    @Column(name = "status", nullable = false)
+    private boolean isSold = false;
 }

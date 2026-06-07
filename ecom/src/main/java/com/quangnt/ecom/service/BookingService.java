@@ -31,8 +31,6 @@ public class BookingService {
     public BookingResponse create(BookingCreateRequest request) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
-                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         Promotion promotion = null;
         if (request.getPromotionId() != null) {
             promotion = promotionRepository.findById(request.getPromotionId())

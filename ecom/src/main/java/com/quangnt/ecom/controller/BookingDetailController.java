@@ -6,7 +6,6 @@ import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.ecom.dto.BookingDetailCreateRequest;
 import com.quangnt.ecom.dto.BookingDetailResponse;
 import com.quangnt.ecom.dto.BookingDetailUpdateRequest;
-import com.quangnt.ecom.service.BookingDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

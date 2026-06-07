@@ -21,4 +21,5 @@ public class PaymentResponse {
     private Integer bookingId;
     private LocalDateTime paidAt;
     private LocalDateTime createdAt;
+    private String paymentUrl;
 }
