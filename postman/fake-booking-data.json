@@ -1,0 +1,126 @@
+{
+  "seed": "booking-demo-001",
+  "users": [
+    {
+      "email": "booking_demo_001@mail.com",
+      "phone": "0900000001",
+      "fullName": "Booking Demo User",
+      "password": "Pass@123",
+      "role": "USER"
+    }
+  ],
+  "cinemas": [
+    {
+      "name": "CGV Demo",
+      "address": "123 Nguyen Hue, District 1",
+      "city": "HCM"
+    }
+  ],
+  "rooms": [
+    {
+      "name": "Room A",
+      "totalSeats": 100,
+      "cinemaRef": "CGV Demo",
+      "type": "STANDARD"
+    }
+  ],
+  "seats": [
+    {
+      "seatNumber": "A1",
+      "rowLabel": "A",
+      "roomRef": "Room A",
+      "type": "STANDARD",
+      "basePrice": 90000
+    },
+    {
+      "seatNumber": "A2",
+      "rowLabel": "A",
+      "roomRef": "Room A",
+      "type": "STANDARD",
+      "basePrice": 90000
+    },
+    {
+      "seatNumber": "B1",
+      "rowLabel": "B",
+      "roomRef": "Room A",
+      "type": "VIP",
+      "basePrice": 120000
+    }
+  ],
+  "movies": [
+    {
+      "title": "The First Booking",
+      "genre": "Action",
+      "duration": 120,
+      "director": "Copilot Director",
+      "cast": "Actor 1, Actor 2",
+      "description": "Sample movie for booking bootstrap flow",
+      "posterMediaId": null,
+      "releaseDate": "2026-04-19",
+      "status": "NOW_SHOWING",
+      "teaserUrl": "https://example.com/teaser",
+      "reviewUrl": "https://example.com/review"
+    }
+  ],
+  "showtimes": [
+    {
+      "startTime": "2026-04-20T18:00:00",
+      "endTime": "2026-04-20T20:00:00",
+      "movieRef": "The First Booking",
+      "roomRef": "Room A",
+      "basePrice": 90000,
+      "availableSeats": 100,
+      "status": "SCHEDULED"
+    }
+  ],
+  "promotions": [
+    {
+      "code": "PROMO-DEMO-10",
+      "discountType": "PERCENT",
+      "discountValue": 10,
+      "startDate": "2026-04-19",
+      "endDate": "2026-12-31",
+      "maxUsage": 1000,
+      "usedCount": 0,
+      "status": "ACTIVE"
+    }
+  ],
+  "bookings": [
+    {
+      "userRef": "booking_demo_001@mail.com",
+      "showtimeRef": "The First Booking @ 2026-04-20T18:00:00",
+      "promotionRef": "PROMO-DEMO-10",
+      "totalAmount": 90000,
+      "discountAmount": 9000,
+      "finalAmount": 81000,
+      "status": "PENDING",
+      "qrCode": "QR-booking-demo-001"
+    }
+  ],
+  "bookingDetails": [
+    {
+      "bookingRef": "QR-booking-demo-001",
+      "seatRef": "A1",
+      "priceAtTime": 90000
+    }
+  ],
+  "payments": [
+    {
+      "method": "MOMO",
+      "amount": 81000,
+      "transactionId": "TX-booking-demo-001",
+      "status": "SUCCESS",
+      "bookingRef": "QR-booking-demo-001"
+    }
+  ],
+  "media": [
+    {
+      "fileName": "poster-demo.jpg",
+      "fileUrl": "https://example.com/media/poster-demo.jpg",
+      "fileType": "image/jpeg",
+      "entityType": "MOVIE",
+      "entityRef": "The First Booking"
+    }
+  ]
+}
+

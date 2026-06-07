@@ -1,0 +1,33 @@
+[
+  {
+    "seed": "booking-demo-001",
+    "userEmail": "booking_demo_001@mail.com",
+    "password": "Pass@123",
+    "fullName": "Booking Demo User",
+    "phone": "0900000001",
+    "txId": "TX-booking-demo-001",
+    "cinemaName": "CGV Demo",
+    "cinemaAddress": "123 Nguyen Hue, District 1",
+    "cinemaCity": "HCM",
+    "roomName": "Room A",
+    "roomType": "STANDARD",
+    "seatNumber": "A1",
+    "rowLabel": "A",
+    "seatType": "STANDARD",
+    "basePrice": 90000,
+    "movieTitle": "The First Booking",
+    "movieGenre": "Action",
+    "movieDuration": 120,
+    "movieStatus": "NOW_SHOWING",
+    "showtimeStart": "2026-04-20T18:00:00",
+    "showtimeEnd": "2026-04-20T20:00:00",
+    "showtimeStatus": "SCHEDULED",
+    "promotionCode": "PROMO-DEMO-10",
+    "promotionDiscountType": "PERCENT",
+    "promotionDiscountValue": 10,
+    "bookingStatus": "PENDING",
+    "paymentMethod": "MOMO",
+    "paymentStatus": "SUCCESS"
+  }
+]
+
