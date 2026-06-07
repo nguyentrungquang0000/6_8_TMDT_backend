@@ -8,7 +8,6 @@ import com.quangnt.common.exception.BusinessException;
 import com.quangnt.ecom.dto.MovieRequest;
 import com.quangnt.ecom.dto.MovieResponse;
 import com.quangnt.ecom.dto.MovieSearchRequest;
-import com.quangnt.ecom.dto.MovieStatus;
 import com.quangnt.ecom.entity.Media;
 import com.quangnt.ecom.entity.Movie;
 import com.quangnt.ecom.mapper.MovieMapper;

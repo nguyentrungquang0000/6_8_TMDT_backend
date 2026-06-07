@@ -17,7 +17,6 @@ public class BookingResponse {
     private Integer id;
     private String userId;
     private Integer showtimeId;
-    private Integer promotionId;
     private BigDecimal totalAmount;
     private BigDecimal discountAmount;
     private BigDecimal finalAmount;

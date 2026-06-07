@@ -6,13 +6,19 @@ import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.ecom.dto.RoomRequest;
 import com.quangnt.ecom.dto.RoomResponse;
 import com.quangnt.ecom.dto.RoomSearch;
-import com.quangnt.ecom.dto.RoomUpdateRequest;
 import com.quangnt.ecom.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 

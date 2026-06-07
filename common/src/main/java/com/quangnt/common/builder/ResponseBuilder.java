@@ -14,8 +14,6 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 @UtilityClass
 public class ResponseBuilder {
 
-    // ===== SUCCESS =====
-
     public static <T> ResponseEntity<ResponseDto<T>> success(
         T data,
         ResponseCode code

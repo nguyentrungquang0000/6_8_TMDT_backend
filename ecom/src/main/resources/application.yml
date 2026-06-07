@@ -2,7 +2,6 @@ spring:
   application:
     name: ecom
   servlet:
-    context-path: /api
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
@@ -17,9 +16,9 @@ spring:
       hibernate.order_inserts: true
       hibernate.order_updates: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/cinema
+    url: jdbc:postgresql://localhost:5432/tmdt_db
     username: postgres
-    password: postgres
+    password: 123
   mail:
     host: smtp.gmail.com
     port: 587
@@ -46,6 +45,7 @@ server:
   port: 8889
   servlet:
     context-path: /api
+  address: 0.0.0.0
 
 jwt:
   secret: bM7nzPj1nksc6mAn9DcO/0gsPpZ2xZVYxvHlTWR8HpqWZ8TgX6O2G5n2U3V7ZQoc1pX0Xg4s6I0vG4b3JSm+QA==

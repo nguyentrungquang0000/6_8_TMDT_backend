@@ -17,10 +17,17 @@ public class ResponseDto<T> {
     private Integer statusCode;
     private MetaData metaData;
 
-    // ===== INTERNAL (không expose ra ngoài) =====
     @JsonIgnore
-    private String messageKey; // message key để i18n
+    private String messageKey;
 
     @JsonIgnore
     private Object[] args;
+
+    public ResponseDto(T data, MetaData metaData) {
+        this.data = data;
+        this.metaData = metaData;
+        this.success = true;
+        this.message = "SUCCESS";
+        this.messageKey = "SUCCESS";
+    }
 }

@@ -8,8 +8,6 @@ import com.quangnt.ecom.entity.Cinema;
 import com.quangnt.ecom.mapper.CinemaMapper;
 import com.quangnt.ecom.repository.CinemaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;

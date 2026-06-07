@@ -1,6 +1,5 @@
 package com.quangnt.ecom.service;
 
-import com.quangnt.common.builder.ResponseBuilder;
 import com.quangnt.common.dto.MetaData;
 import com.quangnt.common.dto.ResponseDto;
 import com.quangnt.common.enumeration.ResponseCode;
@@ -26,13 +25,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,7 +56,6 @@ public class ShowtimeService {
         }
         Showtime entity = showtimeMapper.toEntity(request, movie);
         Showtime saved = showtimeRepository.save(entity);
-        //todo: tạo ticket:
         List<Seat> seats = seatRepository.findAllByRoomId(room.getId());
         if (CollectionUtils.isEmpty(seats)) {
             throw new BusinessException(ResponseCode.BAD_REQUEST, "No seats found for the room");
@@ -86,7 +83,6 @@ public class ShowtimeService {
     public void delete(Integer id) {
         Showtime showtime = showtimeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND, "Showtime", id));
-        // check có ticket nào được bán chưa
         showtimeRepository.delete(showtime);
     }
 
@@ -98,42 +94,40 @@ public class ShowtimeService {
         return showtimeMapper.toResponse(showtime, movie != null ? movie.getTitle() : null, room != null ? room.getName() : null);
     }
 
-    public ResponseEntity<ResponseDto<List<ShowtimeResponse>>> search(ShowtimeSearch request) {
+    public ResponseDto<List<ShowtimeResponse>> search(ShowtimeSearch request) {
         Sort sort = Sort.by(Sort.Direction.DESC, "startTime");
+        int pageNumber = request.page() == null ? 0 : request.page();
+        int pageSize = request.size() == null ? 10 : request.size();
         Pageable pageable = PageRequest.of(
-                request.page() == null ? 0 : request.page(),
-                request.size() == null ? 10 : request.size(),
+                pageNumber,
+                pageSize,
                 sort);
-        Page<Showtime> showtimes = showtimeRepository.search(
+        Page<Showtime> showTimes = showtimeRepository.search(
                 request.movieName(),
                 request.cinemaId(),
                 request.status(),
                 request.date(),
                 pageable);
-
-        List<Integer> movieIds = showtimes.getContent().stream()
+        Set<Integer> movieIds = showTimes.getContent().stream()
                 .map(Showtime::getMovieId)
-                .toList();
+                .collect(Collectors.toSet());
         List<Movie> movies = movieRepository.findAllByIdIn(movieIds);
         Map<Integer, Movie> movieMap = movies.stream()
                 .collect(Collectors.toMap(Movie::getId, Function.identity()));
-
-        List<Integer> roomIds = showtimes.getContent().stream()
+        List<Integer> roomIds = showTimes.getContent()
+                .stream()
                 .map(Showtime::getRoomId)
                 .toList();
         List<Room> rooms = roomRepository.findAllByIdIn(roomIds);
         Map<Integer, Room> roomMap = rooms.stream()
                 .collect(Collectors.toMap(Room::getId, Function.identity()));
-
-
-        List<ShowtimeResponse> response = showtimeMapper.toResponses(showtimes.getContent(), movieMap, roomMap);
+        List<ShowtimeResponse> response = showtimeMapper.toResponses(showTimes.getContent(), movieMap, roomMap);
         MetaData metadata = MetaData.builder()
-                .totalPage(showtimes.getTotalPages())
-                .currentPage(request.page() == null ? 0 : request.page())
-                .pageSize(request.size() == null ? 10 : request.size())
+                .totalPage(showTimes.getTotalPages())
+                .currentPage(pageNumber)
+                .pageSize(pageSize)
                 .build();
-        return ResponseBuilder.success(response, ResponseCode.SUCCESS, metadata);
-
+        return new ResponseDto<>(response, metadata);
     }
 
 }

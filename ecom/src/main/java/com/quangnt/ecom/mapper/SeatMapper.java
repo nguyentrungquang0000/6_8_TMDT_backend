@@ -2,9 +2,12 @@ package com.quangnt.ecom.mapper;
 
 import com.quangnt.ecom.dto.SeatCreateRequest;
 import com.quangnt.ecom.dto.SeatResponse;
-import com.quangnt.ecom.dto.SeatType;
 import com.quangnt.ecom.entity.Seat;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 import java.util.Map;

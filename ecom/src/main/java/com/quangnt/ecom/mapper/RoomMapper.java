@@ -4,7 +4,11 @@ import com.quangnt.ecom.dto.RoomRequest;
 import com.quangnt.ecom.dto.RoomResponse;
 import com.quangnt.ecom.entity.Cinema;
 import com.quangnt.ecom.entity.Room;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 import java.util.Map;

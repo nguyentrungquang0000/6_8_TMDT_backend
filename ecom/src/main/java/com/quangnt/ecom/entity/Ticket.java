@@ -1,8 +1,13 @@
 package com.quangnt.ecom.entity;
 
-import com.quangnt.common.enumeration.TicketStatus;
 import com.quangnt.ecom.dto.SeatType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

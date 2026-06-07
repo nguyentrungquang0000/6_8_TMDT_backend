@@ -3,7 +3,11 @@ package com.quangnt.ecom.mapper;
 import com.quangnt.ecom.dto.MovieRequest;
 import com.quangnt.ecom.dto.MovieResponse;
 import com.quangnt.ecom.entity.Movie;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 import java.util.Map;

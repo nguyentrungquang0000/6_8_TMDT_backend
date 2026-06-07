@@ -4,16 +4,11 @@ import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.common.exception.BusinessException;
 import com.quangnt.ecom.dto.SeatCreateRequest;
 import com.quangnt.ecom.dto.SeatResponse;
-import com.quangnt.ecom.dto.SeatUpdateRequest;
-import com.quangnt.ecom.entity.Room;
 import com.quangnt.ecom.entity.Seat;
 import com.quangnt.ecom.mapper.SeatMapper;
 import com.quangnt.ecom.repository.RoomRepository;
 import com.quangnt.ecom.repository.SeatRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

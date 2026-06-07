@@ -6,11 +6,9 @@ import com.quangnt.ecom.dto.BookingCreateRequest;
 import com.quangnt.ecom.dto.BookingResponse;
 import com.quangnt.ecom.dto.BookingUpdateRequest;
 import com.quangnt.ecom.entity.Booking;
-import com.quangnt.ecom.entity.Promotion;
 import com.quangnt.ecom.entity.Showtime;
 import com.quangnt.ecom.entity.User;
 import com.quangnt.ecom.repository.BookingRepository;
-import com.quangnt.ecom.repository.PromotionRepository;
 import com.quangnt.ecom.repository.ShowtimeRepository;
 import com.quangnt.ecom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,19 +24,12 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ShowtimeRepository showtimeRepository;
-    private final PromotionRepository promotionRepository;
 
     public BookingResponse create(BookingCreateRequest request) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        Promotion promotion = null;
-        if (request.getPromotionId() != null) {
-            promotion = promotionRepository.findById(request.getPromotionId())
-                    .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        }
         Booking booking = Booking.builder()
                 .user(user)
-                .promotion(promotion)
                 .totalAmount(request.getTotalAmount())
                 .discountAmount(request.getDiscountAmount())
                 .finalAmount(request.getFinalAmount())
@@ -55,13 +46,7 @@ public class BookingService {
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
         Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        Promotion promotion = null;
-        if (request.getPromotionId() != null) {
-            promotion = promotionRepository.findById(request.getPromotionId())
-                    .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND));
-        }
         booking.setUser(user);
-        booking.setPromotion(promotion);
         booking.setTotalAmount(request.getTotalAmount());
         booking.setDiscountAmount(request.getDiscountAmount());
         booking.setFinalAmount(request.getFinalAmount());
@@ -88,7 +73,6 @@ public class BookingService {
         return BookingResponse.builder()
                 .id(booking.getId())
                 .userId(booking.getUser().getId())
-                .promotionId(booking.getPromotion() != null ? booking.getPromotion().getId() : null)
                 .totalAmount(booking.getTotalAmount())
                 .discountAmount(booking.getDiscountAmount())
                 .finalAmount(booking.getFinalAmount())

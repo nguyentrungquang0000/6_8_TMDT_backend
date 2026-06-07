@@ -6,14 +6,19 @@ import com.quangnt.common.enumeration.ResponseCode;
 import com.quangnt.ecom.dto.ShowtimeCreateRequest;
 import com.quangnt.ecom.dto.ShowtimeResponse;
 import com.quangnt.ecom.dto.ShowtimeSearch;
-import com.quangnt.ecom.dto.ShowtimeUpdateRequest;
 import com.quangnt.ecom.service.ShowtimeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -49,6 +54,7 @@ public class ShowtimeController {
 
     @GetMapping
     public ResponseEntity<ResponseDto<List<ShowtimeResponse>>> search(@ModelAttribute ShowtimeSearch request) {
-        return showtimeService.search(request);
+        var showTimeResponses = showtimeService.search(request);
+        return ResponseEntity.ok(showTimeResponses);
     }
 }

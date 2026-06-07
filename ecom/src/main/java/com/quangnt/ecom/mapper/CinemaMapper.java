@@ -3,7 +3,11 @@ package com.quangnt.ecom.mapper;
 import com.quangnt.ecom.dto.CinemaRequest;
 import com.quangnt.ecom.dto.CinemaResponse;
 import com.quangnt.ecom.entity.Cinema;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
