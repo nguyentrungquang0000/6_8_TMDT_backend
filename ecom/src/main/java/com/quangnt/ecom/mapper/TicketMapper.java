@@ -17,7 +17,7 @@ public interface TicketMapper {
     @Mapping(target = "showtimeId", source = "showtimeId")
     @Mapping(target = "seatId", expression = ("java(seat.getId())"))
     @Mapping(target = "type", expression = ("java(seat.getType())"))
-    @Mapping(target = "price", constant = ("0"))
+    @Mapping(target = "price", constant = ("10000"))
     @Mapping(target = "id", ignore = true)
     Ticket toEntity(Seat seat,  Integer showtimeId);
 
